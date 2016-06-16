@@ -66,3 +66,21 @@ Pychecker是Google Python Style Guide推荐的工具；Pylint因可以
 人的青睐；Pyflakes则因为易于集成到vim中，所以使用的人也非常多。
 
 **Pythonic的代码，往往是放弃自我风格的代码。**
+
+### 建议3：理解Python与C语言的不同之处
+
+3. 三元操作符“?:”
+> `C ? X : Y`在Python中等价的形式位`X if C else Y`。
+
+4. switch...case
+> Python中没有C语言那样的`switch...case`分之语句。
+> 可以用以下跳转来实现：
+>>  def f(x):
+        return {
+            0: "You typed zero.\n",
+            1: "You are in top.\n"
+            }.get(n, "Only single-digit numbers are allowed")
+
+**不要被其他语言的思维和习惯困扰，掌握Python的哲学和思维方式。**
+
+### 建议4：在代码中适当添加注释
