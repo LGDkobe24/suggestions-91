@@ -28,3 +28,18 @@
     If the implementation is hard to explain, it's a bad idea.
     If the implementation is easy to explain, it may be a good idea.
     Namespaces are one honking great idea -- let's do more of those!
+
+* 占位符`%s`，数量多了以后，很难清楚哪一个占位符对应哪一个实
+参。  
+所以相对应的Pythonic代码是这样的：
+
+    print 'Hello %(name)s!' % {'name': 'Tom'}
+
+    value = {'greet': 'Hello world', 'language': 'Python'}
+    print '%(greet)s from %(language)s.' % value
+
+更具有Pythonic风格的代码：
+
+    print '{greet} from {language}.'.format(
+        greet = 'hellow world',
+        language = 'Python')
