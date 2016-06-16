@@ -1,6 +1,6 @@
 ## 引论
 
-“罗马不是一天建成的”，编写代码水平的提升也不可能一蹴而就，同
+“罗马不是一天建成的”，编写代码水平的提升也不可能一蹴而就，通
 过一点一滴的积累，才能达成从量变到质变的飞跃。
 
 ### 建议 1：理解Pythonic概念
@@ -29,8 +29,8 @@
     If the implementation is easy to explain, it may be a good idea.
     Namespaces are one honking great idea -- let's do more of those!
 
-*占位符`%s`*，数量多了以后，很难清楚哪一个占位符对应哪一个实
-参。  
+**占位符`%s`**，数量多了以后，很难清楚哪一个占位符对应哪一个
+实参。  
 所以相对应的Pythonic代码是这样的：
 
     print 'Hello %(name)s!' % {'name': 'Tom'}
