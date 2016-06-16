@@ -75,11 +75,11 @@ Pychecker是Google Python Style Guide推荐的工具；Pylint因可以
 4. switch...case
 > Python中没有C语言那样的`switch...case`分之语句。
 > 可以用以下跳转来实现：
->>  def f(x):
-        return {
-            0: "You typed zero.\n",
-            1: "You are in top.\n"
-            }.get(n, "Only single-digit numbers are allowed")
+>>     def f(x):
+           return {
+               0: "You typed zero.\n",
+               1: "You are in top.\n"
+               }.get(n, "Only single-digit numbers are allowed")
 
 **不要被其他语言的思维和习惯困扰，掌握Python的哲学和思维方式。**
 
