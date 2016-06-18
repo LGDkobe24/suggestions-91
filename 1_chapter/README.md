@@ -141,7 +141,7 @@ Python中使用常量一般来说右一下两种方式：
           class ConstError(TypeError): pass
           class ConstCaseError(ConstError): pass
 
-          def __setattr__(self, name, value):
+>         def __setattr__(self, name, value):
               if self.__dict__.has_key(name):
                   raise self.ConstError, "Can't change const.%s" % name
               if not name.isupper():
@@ -149,7 +149,7 @@ Python中使用常量一般来说右一下两种方式：
                         'const name "%s" is not all uppercase' % name
               self.__dict__[name] = value
 
-      import sys
+>     import sys
       sys.modules[__name__] = _const()
 
 无论采用哪一种方式来实现常量，都提倡将常量集中到一个文件中，因为这样有利于维护，一旦需要修改常量的值，可以集中统一进行而不是逐个文件取检查。
