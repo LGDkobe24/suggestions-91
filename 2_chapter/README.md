@@ -63,4 +63,24 @@ Lazy evaluation并不是一个很大、很新鲜的话题，但古人云“不�
       class Seasons:
           Spring, Summer, Autumn, Winter = range(4)
 
+2. 借助函数。  
 
+>     def enum(*posarg, **keysarg):
+          return type("Enum", (object,), 
+                      dict(zip(posarg, xrange(len(posarg))), **kwesarg))
+
+>     Seasons = enum("Spring", "Summer", "Autumn", Winter=1)
+      
+3. 使用collections.namedtuple。  
+
+>     Seasons = namedtuple('Seasons', 
+                           'Spring Summer Autumn Winter')._make(range(4))
+
+Python中枚举的替代实现方式还有很多，但是这些替代实现都有其不合理的地方。
+
+> * 允许枚举值重复。
+> * 支持无意义的操作。
+
+Python2.7以后的版本还有另外一种替代选择——使用第三方模块`flufl.enum`，它包含两种枚举类：一种是Enum，只要保证枚举值唯一即可，对值的类型没有限制；还有一种是IntEnum，其枚举值为int型。
+
+**Python3.4中根据PEP435的建议加入了枚举Enum，其实现主要参考了flufl.enum，但两者之间还是存在一些差别的。**
