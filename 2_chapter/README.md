@@ -148,7 +148,7 @@ Unicode的实现方式称为Unicode转换格式（Unicode Transformation Format�
 
 Python中处理中文字符经常会遇见的以下几个问题：
 
-1. 读出文件的内容显示为乱码。
+1.读出文件的内容显示为乱码。
 
 > 分析：读入文件的编码和系统编码不一致，例如文件是以UTF-8编码保存的，Windows的本地默认编码是CP936，在Windows系统中它被映射为GBK编码，这两种编码不兼容。因此要解决这个问题可以使用Unicode作为中间介质来完成转换。首先需要对读入的字符用UTF-8进行解码，然后再用GBK进行编码。
 >     (file.read().decode('utf-8')).encode('gbk')
@@ -156,7 +156,8 @@ Python中处理中文字符经常会遇见的以下几个问题：
 > **提醒**：上面的解决方法，在某些情况下（如文件是用Notepad软件以UTF-8编码形式保存）可能还会出现如下异常：
 >     UnicodeEncodeError: 'gnk' codec can't encode character u'\ufeff' 
           in position 0: illegal multibyte sequence
->> 这是因为有限软件在保存UTF-8编码的时候，会在文件最开始的地方插入不可见的字符BOM（0xEF 0xBB 0xBF，即BOM）,这些不可见字符无法被正确的解析，而利用codecs模块可以方便地处理这种问题。
+>> 这是因为有些软件在保存UTF-8编码的时候，会在文件最开始的地方插入不可见的字符BOM（0xEF 0xBB 0xBF，即BOM）,这些不可见字符无法被正确的解析，而利用codecs模块可以方便地处理这种问题。
+>>
 >>     import codecs
        file = open("test.txt", 'r')
        content = file.read()
@@ -165,11 +166,11 @@ Python中处理中文字符经常会遇见的以下几个问题：
            content = content[3:]
         print content.decode('utf-8')
 
-2. 当Python源文件中包含中文字符的时候抛出SyntaxError异常。
+2.当Python源文件中包含中文字符的时候抛出SyntaxError异常。
 
 > Python中默认的编码是ASCII编码（可以通过sys.getdefaultencoding()来验证），所以若文件是以ASCII形式保存的，并且字符串中包含中文字符。当调用print方法输出的时候会隐式地进行从ASCII到系统默认编码的转换，中文字符并不是ASCII字符，而此时源文件中又未制定其他编码方式，Python解释器并不知道如何正确处理这种情况，便会抛出异常。因此，要避免这种错误需要在源文件中进行编码声明，声明可用正则表达式`coding[:=]\s*([-\w.]+)`表示。
 
-3. 普通字符和Unicode进行字符串连接的时候抛出UnicodeDecodeError异常。
+3.普通字符和Unicode进行字符串连接的时候抛出UnicodeDecodeError异常。
 
 > 使用+ 操作符来进行字符串的连接时，+左边为中文字符串，类型为str，右边为Unicode字符串。当两种类型的字符串连接的时候，Python将左边的中文字符串转换为Unicode再与右边的Unicode字符串做连接。
 > 解决上面的问题有以下两种思路：
