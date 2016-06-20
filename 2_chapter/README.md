@@ -111,3 +111,68 @@ Python2.7以后的版本还有另外一种替代选择——使用第三方模�
 > * 在古典类中，所有类的实例的type值都相等。在古典类中，任意类的实例的type()返回结果都是`<type 'instance'>`。
 
 因此对于内建的基本类型来说，也许使用type()进行类型的检查问题不大，但在某些特殊场合type()方法并不可靠。那么究竟应怎样来约束用户的输入类型从而使之与我们期望的类型一致呢？**答案是**：如果类型有对应的工厂函数，可以使用工厂函数对类型做相应转换，如`list(listing)`、`str(name)`等，否则可以使用`isinstance()`函数来检测。
+
+### 建议13：尽量转换为浮点类型后再做除法
+
+Python在最初的设计过程中借鉴了C语言的一些规则，比如选择C的long类型作为Python的整数类型，double作为浮点类型等。同时标准的算术运算，包括除法，返回值总是和操作数类型相同。作为静态类型语言，C语言中这一规则问题不大，因为变量都会预先申明类型，当类型不符的时候，编译器也会尽可能进行强制类型转换，否则编译会报错。但Python作为一门高级动态语言并没有类型申明这一说，因此在上面的例子中你不能提前申明返回的计算结果为浮点数，当除法运算中两个操作数都为整数的时候，其返回值也为整数，运算结果将直接截断，从而在实际应用中造成潜在的质的误差。
+
+### 建议14：警惕eval()的安全漏洞
+
+Python中eval()函数将字符串str当成有效的表达式来求值并返回计算结果。
+
+“**eval is evil**”。
+
+因此在实际应用过程中**如果使用对象不是信任源，应该尽量避免使用eval，在需要使用eval的地方可用安全性更好的ast.literal_eval替代**。
+
+### 建议15：使用enumerate()获取序列迭代的索引和值
+
+函数enumerate()是在Python2.3中引入的，主要是为了解决在循环中获取索引以及对应值的问题。它具有一定的惰性，每次仅在需要的时候才会产生一个(index, item)对。
+
+enumerate()函数的内部实现非常简单，`enumerate(sqquence, start=0)`实际相当于如下代码：
+
+    def enumerate(sequence, start=0):
+        n = start
+        for elem in sequence:
+            yield n, elem
+            n += 1
+
+### 建议16：分清==与is的适用场景
+
+is表示的是对象标示符，而==表示的意思是相等，显然两者不是一个东西。实际上，造成上面输出结果不一致的根本原因在于：is的作用是用来检查对象的标示符是否一致的，也就是比较两个对象在内存中是否拥有同一块内存空间，它并不适合用来判断两个字符串是否相等。`x is y`仅当x和y是同一个对象的时候才返回True，`x is y`基本相当于`id(x) == id(y)`。而==才是用来检验两个对象的值是否相等的，它实际调用内部`__eq__()`方法，因此`a == b`相当于`a.__eq__(b)`，所以==操作符是可以被重载的，而is不能被重载。
+
+### 建议17：考虑兼容性，尽可能使用Unicode
+
+Unicode(Universal Multiple-Octet Coded Character Set)，Unicode为每种语言设置了唯一的二进制编码表示方式，提供从数字代码到不同语言字符集之间的映射，从而可以满足跨平台、跨语言之间的文本处理要求。
+
+Unicode的实现方式称为Unicode转换格式（Unicode Transformation Format），简称为UTF。
+
+Python中处理中文字符经常会遇见的以下几个问题：
+
+1. 读出文件的内容显示为乱码。
+
+> 分析：读入文件的编码和系统编码不一致，例如文件是以UTF-8编码保存的，Windows的本地默认编码是CP936，在Windows系统中它被映射为GBK编码，这两种编码不兼容。因此要解决这个问题可以使用Unicode作为中间介质来完成转换。首先需要对读入的字符用UTF-8进行解码，然后再用GBK进行编码。
+>     (file.read().decode('utf-8')).encode('gbk')
+> 其中，decode()方法将其他编码对应的字符串解码成Unicode，而encode()方法将Unicode编码转换为另一种编码，Unicode作为转换过程中的中间编码。
+> **提醒**：上面的解决方法，在某些情况下（如文件是用Notepad软件以UTF-8编码形式保存）可能还会出现如下异常：
+>     UnicodeEncodeError: 'gnk' codec can't encode character u'\ufeff' 
+          in position 0: illegal multibyte sequence
+>> 这是因为有限软件在保存UTF-8编码的时候，会在文件最开始的地方插入不可见的字符BOM（0xEF 0xBB 0xBF，即BOM）,这些不可见字符无法被正确的解析，而利用codecs模块可以方便地处理这种问题。
+>>     import codecs
+       file = open("test.txt", 'r')
+       content = file.read()
+       file.close()
+       if content[:3] == codecs.BOM_UTF8:    # 如果存在BOM字符则去掉
+           content = content[3:]
+        print content.decode('utf-8')
+
+2. 当Python源文件中包含中文字符的时候抛出SyntaxError异常。
+
+> Python中默认的编码是ASCII编码（可以通过sys.getdefaultencoding()来验证），所以若文件是以ASCII形式保存的，并且字符串中包含中文字符。当调用print方法输出的时候会隐式地进行从ASCII到系统默认编码的转换，中文字符并不是ASCII字符，而此时源文件中又未制定其他编码方式，Python解释器并不知道如何正确处理这种情况，便会抛出异常。因此，要避免这种错误需要在源文件中进行编码声明，声明可用正则表达式`coding[:=]\s*([-\w.]+)`表示。
+
+3. 普通字符和Unicode进行字符串连接的时候抛出UnicodeDecodeError异常。
+
+> 使用+ 操作符来进行字符串的连接时，+左边为中文字符串，类型为str，右边为Unicode字符串。当两种类型的字符串连接的时候，Python将左边的中文字符串转换为Unicode再与右边的Unicode字符串做连接。
+> 解决上面的问题有以下两种思路：
+>> * 指定str转为Unicode时的编码方式。
+>> * 将Unicode字符串进行UTF-8编码。
+
