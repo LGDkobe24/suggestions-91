@@ -159,12 +159,12 @@ Python中处理中文字符经常会遇见的以下几个问题：
 >> 这是因为有些软件在保存UTF-8编码的时候，会在文件最开始的地方插入不可见的字符BOM（0xEF 0xBB 0xBF，即BOM）,这些不可见字符无法被正确的解析，而利用codecs模块可以方便地处理这种问题。
 >>
 >>     import codecs
-       file = open("test.txt", 'r')
-       content = file.read()
-       file.close()
-       if content[:3] == codecs.BOM_UTF8:    # 如果存在BOM字符则去掉
-           content = content[3:]
-        print content.decode('utf-8')
+    file = open("test.txt", 'r')
+    content = file.read()
+    file.close()
+    if content[:3] == codecs.BOM_UTF8:    # 如果存在BOM字符则去掉
+        content = content[3:]
+    print content.decode('utf-8')
 
 2.当Python源文件中包含中文字符的时候抛出SyntaxError异常。
 
