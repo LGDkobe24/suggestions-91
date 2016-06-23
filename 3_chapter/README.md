@@ -124,3 +124,65 @@ finally中的return语句会优于try中的return返回。
         self.course = course
 
 ### 建议30：[]、()和{}：一致的容器初始化形式
+
+**列表解析**: `[expr for iter_item in iterable if cond_expr]`。
+
+列表解析的使用非常灵活：
+
+* 支持多重嵌套；
+* 支持多重迭代；
+* 列表解析语法中的表达式可以是简单表达式，也可以是复杂表达式，甚至是函数。
+* 列表解析语法中的iterable可以是任意可迭代对象。
+
+**元组解析**：`(expr for iter_item in iterable if cond_expr)`。
+**集合解析**：`{expr for iter_item in iterable if cond_expr}`。
+**字典解析**：`{expr1, expr2 for iter_item in iterable if cond_expr}`。
+
+### 建议31：记住函数传参既不是传值也不是传引用
+
+对于Python函数参数是传值还是传引用这个问题的答案是：都不是。正确的叫法应该是传对象后者说传对象的引用。函数参数在传递的过程中将整个对象传入，对可变对象的修改在函数外部以及内部都可见，调用者和被调用者之间共享这个对象，而对于不可变对象，由于并不能真正被修改，因此，修改往往是通过生成一个新对象然后赋值来实现的。
+
+### 建议32：警惕默认参数潜在的问题
+
+def在Python中是一个可执行的语句，当解释器执行def的时候，默认参数也会被计算，并存在函数的.func_defaults属性中，再次调用的时候默认参数不会重新计算。
+
+### 建议33：慎用变长参数
+
+Python支持可变长度的参数列表，可以通过在函数定义的时候使用`*args`和`**kwargs`这两个特殊语法来实现（args和kwargs可以替换成任意变量名）。
+
+1. 使用`*args`来实现可变参数列表：`*args`用于接受一个包装为元组形式的参数列表来传递非关键字参数，参数个数可以任意，如下例所示。
+
+    def sum_fun(*args):
+        result = 0
+        for x in args[0:]:
+            reult += x
+        return result
+    print sum_fun(2, 4)
+    print sum_fun(1, 2, 3, 4, 5)
+    print sum_fun()
+
+2. 使用`**kwargs`接受字典形式的关键字参数列表，其中字典的键值对分别表示不可变参数的参数名和值。如下例中apple表示参数名，而fruit为其对应的value，可以是一个或者多个键值对。
+
+    def category_table(**kwargs):
+        for name, value in kwargs.items():
+            print '{0} is a kind of {1}'.format(name, value)
+    category_table(apple = 'fruit', carrot = 'vegetable', Python = 'hello')
+    category_table(BMW = 'Car')
+
+如果一个函数中同事定义了普通参数、默认参数，以及上述两种形式的可变参数，那么使用情况又是怎样的呢？
+
+    def set_axis(x, y, xlabel="x", ylabel="y", *args, **kwargs):
+        pass
+
+在4种不同形式的参数同时存在的情况下，会首先满足普通参数，然后是默认参数。如果剩余的参数个数能够覆盖所有的默认参数，则默认参数会使用传递时候的值。如果剩余参数个数不够，则尽最大可能满足默认参数的值。除此之外其余的参数除了键值对以外所有的参数都将作为args的可变参数，kwargs则与键值对对应。
+
+那么，为什么要慎用可变长度参数呢？原因如下：
+
+1. 使用过于灵活。另外变长参数可能会破坏程序的健壮性。
+2. 如果一个函数的参数列表很长，虽然可以通过使用`*args`和`**kwargs`来简化函数的定义，但通常这意味着这个函数可以有更好的实现方式，应该被重构。
+3. 可变长参数适合在下列情况下使用：
+> * 为函数添加一个装饰器
+> * 如果参数的数目不确定，可以考虑使用变长参数。如配置文件。
+> * 用来实习那函数的多态或者在继承情况下子类需要调用父类的某些方法的时候。
+
+
