@@ -48,4 +48,24 @@ Python中的排序相对简单，常用的函数有sort()和sorted()两种。
 
 ### 建议40：深入掌握ConfigParser
 
+### 建议41：使用argparse处理命令行参数
+
+docopt，它是比argparse更先进更易用的命令行参数处理器。但是目前还不是标准库。
+
+### 建议42：使用pandas处理大型CSV文件
+
+### 建议43：一般情况使用ElementTree解析XML
+
+### 建议44：理解模块pickle优劣
+
+### 建议45：序列化的另一个不错的选择——JSON
+
+### 建议46：使用traceback获取栈信息
+
+### 建议47：使用logging记录日志信息
+
+### 建议48：使用threading模块编写多线程程序
+
+### 建议49：使用Queue使多线程编程更安全
+
 
